@@ -1,0 +1,75 @@
+:root {
+  --black-color: #333;
+  --gray-color: #ddd;
+  --light-gray-color: #F5F5F5;
+  --green-color: #61e17a;
+  --light-green-color: #f4fff7;
+  --red-color: #fc6363;
+  --light-red-color: #fff4f4;
+  --yellow-color: #fcc563;
+  --light-yellow-color: #fefff4;
+  --default-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+body {
+  color: var(--black-color);
+  font-family: var(--default-font);
+}
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 65px 50px repeat(5, 110px);
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.calendar .month {
+  grid-column-end: span 7;
+  align-self: center;
+  font-weight: 800;
+  font-size: 34px;
+}
+.calendar .day-container {
+  border-left: 1px solid var(--gray-color);
+  border-bottom: 1px solid var(--gray-color);
+  text-align: right;
+  background-color: white;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 10px;
+}
+.calendar .day-container.today {
+  font-weight: 800;
+  background-color: var(--light-gray-color);
+}
+.calendar .day-container:nth-child(7n + 1) {
+  border-right: 1px solid var(--gray-color);
+}
+.calendar .day-container .time {
+  font-size: 18px;
+  justify-self: center;
+  align-self: center;
+}
+.day-container.low {
+  background-color: var(--light-red-color);
+}
+.day-container.low .time {
+  color: var(--red-color);
+}
+.day-container.med {
+  background-color: var(--light-yellow-color);
+}
+.day-container.med .time {
+  color: var(--yellow-color);
+}
+.day-container.high {
+  background-color: var(--light-green-color);
+}
+.day-container.high .time {
+  color: var(--green-color);
+}
+.calendar .weekday {
+  align-self: end;
+  padding: 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--gray-color);
+}
