@@ -30,8 +30,9 @@ class StopException(Exception):
     pass
 
 class DeepWork:
-    def __init__(self, deep_path):
+    def __init__(self, deep_path, visual_path):
         self.deep_path = deep_path
+        self.visual_path = visual_path
 
     def stop(self):
         """Stops deep work"""
@@ -45,9 +46,10 @@ class DeepWork:
                 last_line = lines[-1]
                 start_time = _timestamp_to_datetime(last_line.split(',')[1].replace('\n', ''))
                 delta_time = now_time - start_time
-                print("Stopped deep working at", str(now_time))
-                print("Total elapsed time:", str(delta_time))
+                delta_time_parts = str(delta_time).split(':')
                 f_out.write(constants.STOP + ',' + str(now_time) + '\n')
+        self.update_visual()
+        return now_time, delta_time_parts
 
     def start(self):
         """Starts deep work"""
@@ -59,16 +61,15 @@ class DeepWork:
                 prev_op = _prev_op(lines)
                 if prev_op == constants.START:
                     raise StartException('Session already in progress!')
-                print("Started deep working at", str(now_time))
                 f_out.write(constants.START + ',' + str(now_time) + '\n')
+        return now_time
 
     def clear(self):
         """Clears deep work log"""
         open(self.deep_path, 'w').close()
-        print("Deep log cleared!")
 
     def log(self):
-        """Pretty prints a log of deep work"""
+        """Pretty prints a deep work log"""
         date_hours = self._build_date_hours_dict()
         result = []
         for date in date_hours:
@@ -76,12 +77,17 @@ class DeepWork:
             result.append('{:<9} {} : {}'.format(weekday_name, date, date_hours[date]))
         return '\n'.join(result)
 
-    def to_json(self):
-        """Outputs json format of day hour log"""
+    def json(self):
+        """Outputs json format of deep work log"""
         date_hours = self._build_date_hours_dict()
         for date in date_hours:
             date_hours[date] = str(date_hours[date])
-        return json.dumps(date_hours)
+        return json.dumps(date_hours, indent=4, sort_keys=True)
+
+    def update_visual(self):
+        """Ouptuts a json log file at the visual_path"""
+        with open(self.visual_path, 'w') as f_out:
+            f_out.write(self.json())
 
     def _build_date_hours_dict(self):
         date_hours = {}
