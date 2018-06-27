@@ -15,11 +15,23 @@ def _to_iso_date(date):
 def _from_iso_date(st_date):
     return datetime.strptime(st_date, '%Y-%m-%d')
 
-def _prev_op(lines):
-    if not lines:
-        return constants.STOP
-    last_line = lines[-1]
-    return last_line.split(',')[0].lower()
+def _csv_reader(file):
+    return csv.reader(file, delimiter=',', quotechar='|')
+
+def _csv_writer(file):
+    return csv.writer(file, delimiter=',', quotechar='|')
+
+def _prev_op(file):
+    file.seek(0)
+    last_line = list(_csv_reader(file))[-1]
+    return last_line[0].lower()
+
+def _elapsed_time(file, now_time):
+    file.seek(0)
+    last_line = list(_csv_reader(file))[-1]
+    start_time = _timestamp_to_datetime(last_line[1])
+    delta_time = now_time - start_time
+    return str(delta_time).split(':')
 
 class StartException(Exception):
     """Exception when starting deep work"""
@@ -36,32 +48,25 @@ class DeepWork:
 
     def stop(self):
         """Stops deep work"""
-        with open(self.deep_path, 'a+') as f_out:
-            with open(self.deep_path, 'r') as f_in:
-                now_time = datetime.now()
-                lines = f_in.readlines()
-                prev_op = _prev_op(lines)
-                if prev_op == constants.STOP:
-                    raise StartException('Session has not started yet!')
-                last_line = lines[-1]
-                start_time = _timestamp_to_datetime(last_line.split(',')[1].replace('\n', ''))
-                delta_time = now_time - start_time
-                delta_time_parts = str(delta_time).split(':')
-                f_out.write(constants.STOP + ',' + str(now_time) + '\n')
+        now_time = datetime.now()
+        with open(self.deep_path, 'r') as file:
+            prev_op = _prev_op(file)
+            if prev_op == constants.STOP:
+                raise StartException('Session has not started yet!')
+            elapsed_time = _elapsed_time(file, now_time)
+        self._writerow([constants.STOP, str(now_time)])
         self.update_visual()
-        return now_time, delta_time_parts
+        return now_time, elapsed_time
 
-    def start(self):
+    def start(self, description=None):
         """Starts deep work"""
-        with open(self.deep_path, 'a+') as f_out:
-            with open(self.deep_path, 'r') as f_in:
-                now_time = datetime.now()
-                prev_op = constants.STOP
-                lines = f_in.readlines()
-                prev_op = _prev_op(lines)
-                if prev_op == constants.START:
-                    raise StartException('Session already in progress!')
-                f_out.write(constants.START + ',' + str(now_time) + '\n')
+        with open(self.deep_path, 'r') as file:
+            now_time = datetime.now()
+            prev_op = constants.STOP
+            prev_op = _prev_op(file)
+            if prev_op == constants.START:
+                raise StartException('Session already in progress!')
+            self._writerow([constants.START, str(now_time), description])
         return now_time
 
     def clear(self):
@@ -89,10 +94,14 @@ class DeepWork:
         with open(self.visual_path, 'w') as f_out:
             f_out.write(self.json())
 
+    def _writerow(self, row):
+        with open(self.deep_path, 'a+') as file:
+            _csv_writer(file).writerow(row)
+
     def _build_date_hours_dict(self):
         date_hours = {}
-        with open(self.deep_path, 'r') as csvfile:
-            reader = csv.reader(csvfile)
+        with open(self.deep_path, 'r') as file:
+            reader = _csv_reader(file)
             start_time = None
             current_date = None
             for row in reader:
