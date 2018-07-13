@@ -17,7 +17,8 @@ body {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: 65px 50px repeat(5, 110px);
+  grid-template-rows: 65px 50px;
+  grid-auto-rows: 110px;
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
