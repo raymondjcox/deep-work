@@ -1,5 +1,6 @@
 :root {
   --black-color: #333;
+  --dark-gray-color: #999;
   --gray-color: #ddd;
   --light-gray-color: #F5F5F5;
   --green-color: #61e17a;
@@ -14,6 +15,24 @@ body {
   color: var(--black-color);
   font-family: var(--default-font);
 }
+a {
+  text-decoration: none;
+  color: var(--black-color);
+}
+a:visited, a:active {
+  color: var(--black-color);
+}
+a:hover {
+  color: var(--dark-gray-color);
+}
+@keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+}
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -23,11 +42,22 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
-.calendar .month {
+.calendar .day-container, .calendar .weekday {
+  animation: fade-in 1s ease;
+}
+.calendar .month-container {
   grid-column-end: span 7;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  align-items: center;
+  grid-gap: 10px;
+  justify-content: left;
+  margin-left: 5px;
+}
+.calendar .month-container .month {
   align-self: center;
   font-weight: 800;
-  font-size: 34px;
+  font-size: 2rem;
 }
 .calendar .day-container {
   border-left: 1px solid var(--gray-color);
@@ -46,7 +76,7 @@ body {
   border-right: 1px solid var(--gray-color);
 }
 .calendar .day-container .time {
-  font-size: 18px;
+  font-size: 1rem;
   justify-self: center;
   align-self: center;
 }
