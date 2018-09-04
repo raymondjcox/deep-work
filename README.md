@@ -7,15 +7,20 @@ I read Cal Newport's [Deep Work](https://www.amazon.com/Deep-Work-Focused-Succes
 ## Usage
 Change `constants.py` `VISUAL_PATH` and `DEEP_PATH` to wherever you want. `DEEP_PATH` is where all of your time logs are stored. `VISUAL_PATH` is where daily JSON is outputted when stopping or `deep update` (it should be your visual folder).
 
-`./deep.py start`  - starts the timer
+### `./deep.py start`
+starts the timer
 
-`./deep.py stop`   - stops the timer
+### `./deep.py stop` 
+stops the timer
 
-`./deep.py clear`  - deletes the log
+### `./deep.py clear`
+deletes the log
 
-`./deep.py log`    - pretty prints the log
+### `./deep.py log`
+pretty prints the log
 
-`./deep.py update` - called automatically after stop, outputs todays deep work to `VISUAL_PATH` (json)
+### `./deep.py update` 
+called automatically after stop, outputs todays deep work to `VISUAL_PATH` (json)
 
 ## Visualization
 
